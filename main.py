@@ -112,4 +112,5 @@ for missing_ratings in [0.25, 0.75]:
 plt.title(f"MAE of KNN")
 plt.xlabel("K")
 plt.ylabel("MAE")
+plt.legend()
 plt.show()
