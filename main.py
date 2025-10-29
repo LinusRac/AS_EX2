@@ -104,7 +104,7 @@ for missing_ratings in [0.25, 0.75]:
         Ns = np.array([10, 20, 50, 100])
         f1s = np.zeros_like(Ns)
 
-        for i, N in enumerate(Ns):
+        for j, N in enumerate(Ns):
 
             precisions, recalls = precision_recall_at_n(predictions, n=N, threshold=4)
 
@@ -115,7 +115,7 @@ for missing_ratings in [0.25, 0.75]:
             print(f"    N = {N} -- Recall:", recall)
             print(f"    N = {N} -- F1:", 2*pre*recall/(pre+recall))
 
-            f1s[i] = 2*pre*recall/(pre+recall)
+            f1s[j] = 2*pre*recall/(pre+recall)
         
         ax_f1.plot(Ns, f1s, label=f"F1 of {algo_names[i]} at {missing_ratings}% missing")
 
