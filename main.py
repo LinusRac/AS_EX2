@@ -102,7 +102,7 @@ for missing_ratings in [0.25, 0.75]:
         mae(predictions)
 
         Ns = np.array([10, 20, 50, 100])
-        f1s = np.zeros_like(Ns)
+        f1s = np.zeros_like(Ns).astype(np.float32)
 
         for j, N in enumerate(Ns):
 
@@ -122,14 +122,16 @@ for missing_ratings in [0.25, 0.75]:
 
         
 
-ax_knn.title(f"MAE of KNN")
-ax_knn.xlabel("K")
-ax_knn.ylabel("MAE")
+ax_knn.set_title(f"MAE of KNN")
+ax_knn.set_xlabel("K")
+ax_knn.set_ylabel("MAE")
+ax_knn.grid(True)
 ax_knn.legend()
 
-ax_f1.title("F1 score")
-ax_f1.xlabel("N")
-ax_f1.ylabel("F1 score")
+ax_f1.set_title("F1 score")
+ax_f1.set_xlabel("N")
+ax_f1.set_ylabel("F1 score")
+ax_f1.grid(True)
 ax_f1.legend()
 
 plt.show()
