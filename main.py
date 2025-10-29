@@ -49,6 +49,7 @@ data = Dataset.load_builtin('ml-100k')
 
 # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ 
 
+fig, (ax_knn, ax_f1) = fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
 
 for missing_ratings in [0.25, 0.75]:
     print(f"\033[32mPercentage of missing ratings: {missing_ratings}\033[0m")
@@ -72,7 +73,7 @@ for missing_ratings in [0.25, 0.75]:
         mae_s[i] = mae(predictions_KNN, verbose=False)
     print("                 ")
     
-    plt.plot(ks, mae_s, label = f"{missing_ratings}% missing")
+    ax_knn.plot(ks, mae_s, label = f"{missing_ratings}% missing")
     k = ks[np.argmin(mae_s)]
 
     algo_knn = KNNWithMeans(k, sim_options=sim_options_KNN, verbose=False)
@@ -100,7 +101,10 @@ for missing_ratings in [0.25, 0.75]:
 
         mae(predictions)
 
-        for N in range(10, 100, 10):
+        Ns = np.array([10, 20, 50, 100])
+        f1s = np.zeros_like(Ns)
+
+        for i, N in enumerate(Ns):
 
             precisions, recalls = precision_recall_at_n(predictions, n=N, threshold=4)
 
@@ -111,13 +115,21 @@ for missing_ratings in [0.25, 0.75]:
             print(f"    N = {N} -- Recall:", recall)
             print(f"    N = {N} -- F1:", 2*pre*recall/(pre+recall))
 
+            f1s[i] = 2*pre*recall/(pre+recall)
+        
+        ax_f1.plot(Ns, f1s, label=f"F1 of {algo_names[i]} at {missing_ratings}% missing")
+
+
         
 
+ax_knn.title(f"MAE of KNN")
+ax_knn.xlabel("K")
+ax_knn.ylabel("MAE")
+ax_knn.legend()
 
+ax_f1.title("F1 score")
+ax_f1.xlabel("N")
+ax_f1.ylabel("F1 score")
+ax_f1.legend()
 
-
-plt.title(f"MAE of KNN")
-plt.xlabel("K")
-plt.ylabel("MAE")
-plt.legend()
 plt.show()
