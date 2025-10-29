@@ -64,10 +64,10 @@ for missing_ratings in [0.25, 0.75]:
     for i, k in enumerate(ks):
         print(f"K={k}", end='\r')
         # prepare user-based KNN for predicting ratings from trainset25
-        algo = KNNWithMeans(k, sim_options=sim_options_KNN, verbose=False)
-        algo.fit(trainset)
+        algo_knn = KNNWithMeans(k, sim_options=sim_options_KNN, verbose=False)
+        algo_knn.fit(trainset)
 
-        predictions_KNN = algo.test(testset)
+        predictions_KNN = algo_knn.test(testset)
 
         mae_s[i] = mae(predictions_KNN, verbose=False)
     print("                 ")
@@ -75,17 +75,17 @@ for missing_ratings in [0.25, 0.75]:
     plt.plot(ks, mae_s, label = f"{missing_ratings}% missing")
     k = ks[np.argmin(mae_s)]
 
-    algo_best = KNNWithMeans(k, sim_options=sim_options_KNN, verbose=False)
-    algo_best.fit(trainset)
+    algo_knn = KNNWithMeans(k, sim_options=sim_options_KNN, verbose=False)
+    algo_knn.fit(trainset)
 
-    predictions_KNN = algo_best.test(testset)
+    predictions_KNN = algo_knn.test(testset)
 
 
     # SVD
 
-    algo = SVD(random_state=3)
-    algo.fit(trainset)
-    predictions_SVD = algo.test(testset)
+    algo_svd = SVD(random_state=3)
+    algo_svd.fit(trainset)
+    predictions_SVD = algo_svd.test(testset)
 
     predictions_list = [predictions_SVD, predictions_KNN]
     algo_names = ["SVD", f"{k}-NN"]
@@ -100,14 +100,21 @@ for missing_ratings in [0.25, 0.75]:
 
         mae(predictions)
 
-        precisions, recalls = precision_recall_at_n(predictions, n=5, threshold=4)
+        for N in range(10, 100, 10):
 
-        # Precision and recall can then be averaged over all users
-        pre = sum(prec for prec in precisions.values()) / len(precisions)
-        recall = sum(rec for rec in recalls.values()) / len(recalls)
-        print("Precision:", pre)
-        print("Recall:", recall)
-        print("F1:", 2*pre*recall/(pre+recall))
+            precisions, recalls = precision_recall_at_n(predictions, n=N, threshold=4)
+
+            # Precision and recall can then be averaged over all users
+            pre = sum(prec for prec in precisions.values()) / len(precisions)
+            recall = sum(rec for rec in recalls.values()) / len(recalls)
+            print(f"    N = {N} -- Precision:", pre)
+            print(f"    N = {N} -- Recall:", recall)
+            print(f"    N = {N} -- F1:", 2*pre*recall/(pre+recall))
+
+        
+
+
+
 
 plt.title(f"MAE of KNN")
 plt.xlabel("K")
