@@ -18,9 +18,24 @@ The objective is to:
 | 75% | User-based K-NN | **90** | **0.8133** | Optimal K increases as sparsity increases |
 | 75% | SVD (Funk variant) | — | **0.7736** | Lower MAE than K-NN, showing robustness to sparsity |
 
+We observe, as expected, that **SVD outperforms K-NN** in terms of MAE, especially under high sparsity (75% missing ratings). This is due to SVD's ability to learn latent factors that generalize better when data is sparse.
+
+<p align="center">
+	<img src="mae_knn.png" alt="MAE of KNN" width="520">
+	<!-- For pandoc users: ![](mae_knn.png){ width=60% } -->
+  
+</p>
+
+By looking at the MAE–vs–K curves for K‑NN, we can observe that, with very small K, MAE is high because predictions rely on too few neighbours. As K increases, MAE drops quickly and reaches a minimum (around K≈64 for 25% missing and K≈90 for 75% missing). Beyond these optima, adding more (increasingly dissimilar) neighbours makes the prediction worse and gently increases MAE, after which the curve flattens. Under 75% missing, the whole curve shifts upward and the best K moves higher, reflecting the need for more neighbours to compensate for reduced rating overlap in sparse data.
+
 ---
 
 ## 3. Top-N Recommendation Metrics
+
+<p align="center">
+	<img src="metrics_topn.png" alt="F1 Score for Top-N Recommendations" width="520">
+	<!-- For pandoc users: ![](metrics_topn.png){ width=60% } -->
+</p>
 
 ### (a) 25% Missing Ratings
 
@@ -35,8 +50,7 @@ The objective is to:
 | 100 | SVD | 0.147 | 0.986 | 0.256 |
 | 100 | 64-NN | 0.147 | 0.986 | 0.256 |
 
-**Observation:**  
-At 25% sparsity, both SVD and K-NN perform similarly in terms of precision, recall, and F1.  
+We observe that, at 25% sparsity, both SVD and K-NN perform similarly in terms of precision, recall, and F1.  
 However, **SVD slightly outperforms K-NN in MAE**, indicating slightly better prediction accuracy.
 
 ---
@@ -54,33 +68,23 @@ However, **SVD slightly outperforms K-NN in MAE**, indicating slightly better pr
 | 100 | SVD | 0.356 | 0.927 | 0.515 |
 | 100 | 90-NN | 0.354 | 0.925 | 0.512 |
 
-**Observation:**  
-At 75% sparsity, **SVD consistently yields better MAE and F1 values**, especially for moderate N (20–50).  
-This indicates **SVD’s advantage in sparse settings** due to latent factor modeling.
+We observe that, at 75% sparsity, **SVD consistently achieves better MAE and F1 values**, especially for moderate N (20–50).  
+This indicates SVD’s advantage in sparse conditions due to latent factor modeling.
 
 ---
 
 ## 4. Discussion and Interpretation
 
-- **Optimal K Increases with Sparsity:**  
-  With fewer overlapping ratings between users, more neighbors are required for reliable similarity estimation — hence **K = 64** (25% missing) vs. **K = 90** (75% missing).  
+We observe that, as data sparsity increases, the optimal **K** for K-NN also increases. This is because with fewer overlapping ratings between users, more neighbors are required for reliable similarity estimation, hence **K = 64** (25% missing) vs. **K = 90** (75% missing).  
 
-- **SVD Handles Sparsity Better:**  
-  SVD generalizes better by decomposing the rating matrix into latent factors, allowing it to infer unseen preferences even with limited data. This leads to **lower MAE** in the sparse scenario.  
+As expected, SVD works better than K-NN especially under high sparsity. SVD generalizes better by decomposing the rating matrix into latent factors, allowing it to infer unseen preferences even with limited data. This leads to **lower MAE** in the sparse scenario.  
 
-- **Precision-Recall Tradeoff:**  
-  As **N increases**, recall rises while precision drops — a standard behavior in recommender systems since including more recommendations increases the likelihood of covering relevant items but also introduces more irrelevant ones.  
+<p align="center">
+	<img src="svd_75_detailed.png" alt="SVD at 75% missing ratings" width="700">
+	<!-- For pandoc users: ![](svd_75_detailed.png){ width=75% } -->
+</p>
 
-- **Results Make Sense:**  
-  - The **slight edge of SVD over K-NN** under both sparsity levels aligns with theory: factor models reduce noise and sparsity sensitivity.  
-  - **K-NN remains competitive** when data density is high, reflecting that neighbor-based similarity still works effectively when sufficient overlap exists.  
+By observing the Top-N recommendation metrics in the plot, we note a trend: as **N increases**, recall rises while precision drops. This is a standard behavior in recommender systems since including more recommendations increases the likelihood of covering relevant items but also introduces more irrelevant ones. 
 
----
+Overall, the results of this experiment validate the theoretical expectations: SVD has a slight advantage over K‑NN at both sparsity levels, since these models reduce noise and are less sensitive to sparsity. K‑NN remains competitive when data density is higher, since neighbor‑based similarity works well given sufficient rating overlap.
 
-## 5. Conclusion
-
-- **For 25% missing ratings:** Both SVD and K-NN (K=64) perform similarly, with SVD slightly better in MAE.  
-- **For 75% missing ratings:** SVD outperforms K-NN (K=90), confirming its robustness to sparsity.  
-- **For Top-N recommendations:** The tradeoff between precision and recall follows expected trends, validating the implementation.  
-
-Overall, the results confirm that **matrix factorization (SVD)** provides better performance and scalability under sparse conditions, while **user-based K-NN** remains a simple and interpretable baseline for denser datasets.
