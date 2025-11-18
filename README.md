@@ -1,5 +1,9 @@
 # Collaborative Filtering Experiment – K-NN vs. SVD
 
+AdaptiveSystems Practical Assignment 2
+UPM - Adaptive Systems (2025/2026)
+**Buonaccorsi Emanuele, Rachinger Linus**
+
 ## 1. Overview  
 This experiment investigates the performance of **User-Based Collaborative Filtering (K-NN)** and **Matrix Factorization (SVD, Funk variant)** on a given dataset.  
 The objective is to:
